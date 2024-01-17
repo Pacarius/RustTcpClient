@@ -1,4 +1,4 @@
-use gtk4 as gtk;
+
 
 
 
@@ -21,7 +21,8 @@ use gtk4 as gtk;
 //     });
 //     app.run()
 // }
-
+mod client;
+use client::makeClient;
 fn main(){
-
+    makeClient();
 }
