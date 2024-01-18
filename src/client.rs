@@ -10,52 +10,9 @@ use std::net::TcpListener;
 
 type Port = u16;
 
-struct Program {
-	name: String
-}
-
-impl Program {
-	fn new(name: String) -> Program {
-		Program { name: name }
-	}
-
-	fn usage(&self) {
-		println!("usage: {} HOST PORT",self.name);
-	}
-
-	fn print_error(&self,mesg: String) {
-		writeln!(io::stderr(),"{}: error: {}",self.name,mesg);
-	}
-
-	fn print_fail(&self,mesg: String) -> ! {
-		self.print_error(mesg);
-		self.fail();
-	}
-
-	fn exit(&self,status: i32) -> ! { process::exit(status); }
-	fn fail(&self) -> ! { self.exit(-1); }
-}
-
 pub fn makeClient() {
-	let mut args = env::args();
-	let program = Program::new(
-		args.next().unwrap_or("test".to_string())
-	);
-
-	let host = args.next().unwrap_or_else(|| {
-		program.usage();
-		program.fail();
-	});
-
-	let port = args.next().unwrap_or_else(|| {
-		program.usage();
-		program.fail();
-	}).parse::<Port>().unwrap_or_else(|error| {
-		program.print_error(format!("invalid port number: {}",error));
-		program.usage();
-		program.fail();
-	});
-
+	let host = "127.0.0.1";
+	let port = "40269";
 	let mut stream = TcpStream::connect(
 		(host.as_str(), port)
 	).unwrap_or_else(|error|
