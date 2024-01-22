@@ -7,14 +7,43 @@ use std::thread;
 use std::io::{self, Read, Write, Error};
 use std::net::TcpStream;
 use std::net::TcpListener;
-
+use std::net::IpAddr;
 type Port = u16;
 
-pub fn makeClient() {
-	let host = "127.0.0.1";
-	let port = "40269";
+struct Program {
+	name: String
+}
+
+impl Program {
+	fn new(name: String) -> Program {
+		Program { name: name }
+	}
+
+	fn print_error(&self,mesg: String) {
+		writeln!(io::stderr(),"{}: error: {}",self.name,mesg);
+	}
+
+	fn print_fail(&self,mesg: String) -> ! {
+		self.print_error(mesg);
+		self.fail();
+	}
+
+	fn exit(&self,status: i32) -> ! { process::exit(status) }
+	fn fail(&self) -> ! { self.exit(-1); }
+}
+
+pub fn make_default_client() {
+	let mut args = env::args();
+	let program = Program::new(
+		args.next().unwrap_or("test".to_string())
+	);
+	let host : IpAddr = "127.0.0.1"
+	.parse()
+	.expect("Unable to parse host");
+	let port = 9999;
+
 	let mut stream = TcpStream::connect(
-		(host.as_str(), port)
+		(host, port)
 	).unwrap_or_else(|error|
 		program.print_fail(error.to_string())
 	);

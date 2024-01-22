@@ -22,7 +22,7 @@
 //     app.run()
 // }
 mod client;
-use client::makeClient;
+use client::make_default_client;
 fn main(){
-    makeClient();
+    make_default_client();
 }
