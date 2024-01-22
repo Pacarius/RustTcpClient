@@ -2,6 +2,10 @@
 #![allow(unused_imports)]
 
 use std::env;
+use std::io::{self, Error, Read, Write};
+use std::net::IpAddr;
+use std::net::TcpListener;
+use std::net::TcpStream;
 use std::process;
 use std::thread;
 use std::io::{self, Read, Write, Error};
@@ -49,33 +53,39 @@ pub fn make_default_client() {
 	);
 	let mut input_stream = stream.try_clone().unwrap();
 
-	let handler = thread::spawn(move || {
-		let mut client_buffer = [0u8; 1024];
+        let handler = thread::spawn(move || {
+            let mut client_buffer = [0u8; 1024];
 
-		loop {
-			match input_stream.read(&mut client_buffer) {
-				Ok(n) => {
-					if n == 0 {
-						program.exit(0);
-					}
-					else
-					{
-						io::stdout().write(&client_buffer).unwrap();
-						io::stdout().flush().unwrap();
-					}
-				},
-				Err(error) => program.print_fail(error.to_string()),
-			}
-		}
-	});
+            loop {
+                match input_stream.read(&mut client_buffer) {
+                    Ok(n) => {
+                        if n == 0 {
+                            std::process::exit(0);
+                        } else {
+                            io::stdout().write(&client_buffer).unwrap();
+                            io::stdout().flush().unwrap();
+                        }
+                    }
+                    Err(error) => std::process::exit(-1),
+                }
+            }
+        });
 
-	let output_stream = &mut stream;
-	let mut user_buffer = String::new();
+        let output_stream = &mut stream;
+        let mut user_buffer = String::new();
 
-	loop {
-		io::stdin().read_line(&mut user_buffer).unwrap();
+        loop {
+            io::stdin().read_line(&mut user_buffer).unwrap();
 
-		output_stream.write(user_buffer.as_bytes()).unwrap();
-		output_stream.flush().unwrap();
-	}
+            Write::write_all(output_stream, user_buffer.as_bytes()).unwrap();
+            output_stream.flush().unwrap();
+        }
+    }
+}
+fn main(){
+    let client = clientInfo{
+        host:"127.0.0.1".parse().expect("Fuck you."),
+        port:42069
+    };
+    client.makeClient();
 }
