@@ -8,11 +8,8 @@ use std::net::TcpListener;
 use std::net::TcpStream;
 use std::process;
 use std::thread;
-use std::io::{self, Read, Write, Error};
-use std::net::TcpStream;
-use std::net::TcpListener;
-use std::net::IpAddr;
-type Port = u16;
+
+// type Port = u16;
 
 struct Program {
 	name: String
@@ -36,15 +33,15 @@ impl Program {
 	fn fail(&self) -> ! { self.exit(-1); }
 }
 
-pub fn make_default_client() {
+pub fn make_default_client(IP: Option<String>, PORT: Option<u16>) {
 	let mut args = env::args();
 	let program = Program::new(
 		args.next().unwrap_or("test".to_string())
 	);
-	let host : IpAddr = "127.0.0.1"
+	let host : IpAddr = IP.unwrap_or("127.0.0.1".to_string())
 	.parse()
 	.expect("Unable to parse host");
-	let port = 9999;
+	let port: u16 = PORT.unwrap_or(42069);
 
 	let mut stream = TcpStream::connect(
 		(host, port)
@@ -79,13 +76,7 @@ pub fn make_default_client() {
 
             Write::write_all(output_stream, user_buffer.as_bytes()).unwrap();
             output_stream.flush().unwrap();
+            user_buffer.clear();
         }
     }
-}
-fn main(){
-    let client = clientInfo{
-        host:"127.0.0.1".parse().expect("Fuck you."),
-        port:42069
-    };
-    client.makeClient();
-}
+

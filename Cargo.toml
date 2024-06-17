@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 cairo-rs = "0.18.5"
+clap = { version = "4.5.7", features = ["derive"]}
 gio = "0.18.4"
 glib = "0.18.5"
 gtk4 = "0.7.3"
